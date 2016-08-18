@@ -78,11 +78,11 @@ public class TcpServer
         {            
             foreach (Socket sock in clientSockes)
             {
-                sock.Disconnect(false);
+                //sock.Disconnect(false);
                 sock.Close();
             }
             clientSockes.Clear();
-            listenSock.Disconnect(false);
+            //listenSock.Disconnect(false);
             listenSock.Close();
         }
         catch
