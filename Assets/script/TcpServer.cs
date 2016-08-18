@@ -28,9 +28,7 @@ public class TcpServer
     public TcpServer()
     {
         // create listening socket
-        listenSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
-        
+        listenSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);        
     }
     public void Start()
     {
