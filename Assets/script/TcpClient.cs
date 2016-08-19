@@ -114,8 +114,8 @@ public class TcpClient
             OnReceived(asyncData.msg, asyncData.msgLength);
         }        
 
-        try {
-			asyncReceiveCallback = new AsyncCallback(HandleAsyncReceive);
+        try
+		{
             clientSock.BeginReceive(asyncData.msg, 0, AsyncData.msgMaxLength, SocketFlags.None, asyncReceiveCallback, asyncData);
         }
         catch {
