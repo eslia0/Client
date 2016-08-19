@@ -150,11 +150,26 @@ public class TcpServer
             DisconnectClient(clientSock);
             return;
         }
-        
-        if (OnReceived != null)
+        if (clientSock.Connected)
         {
-            OnReceived(clientSock, asyncData.msg, asyncData.msgLength);
+            if (OnReceived != null)
+            {
+                if (clientSock != null && asyncData.msgLength > 0)
+                {
+                    OnReceived(clientSock, asyncData.msg, asyncData.msgLength);
+                }
+                else
+                {
+                    Debug.Log("TcpServer::HandleAsyncReceive() : OnReceived - 예외 - 자료없음");
+                    DisconnectClient(clientSock);
+                }
+            }
+        }else
+        {
+            Debug.Log("TcpServer::HandleAsyncReceive() : OnReceived - 예외 - 커넥 없음");
+            DisconnectClient(clientSock);
         }
+
         AsyncCallback asyncReceiveCallback = new AsyncCallback(HandleAsyncReceive);
         try
         {
