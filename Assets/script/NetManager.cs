@@ -97,12 +97,7 @@ public class NetManager : MonoBehaviour {
         m_guest.Setup(ip, HostPort);
         return m_guest.Connect();
     }
-<<<<<<< HEAD
-
-    public void DisconnectGuestSocket()
-=======
     public void DisconnectMyGuestSocket() // (내가 게스트일때) 호스트와 연결을 끊는다.
->>>>>>> 5f8641b7c4c2c53405c7a691a490162fa5c3ac97
     {
         m_guest.DisConnect();
     }
