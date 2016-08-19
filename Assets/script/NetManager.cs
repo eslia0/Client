@@ -68,7 +68,6 @@ public class NetManager : MonoBehaviour {
     }
     void Update()
     {
-
         Receive(m_recvQueueFromServer, m_client.socket, m_notiServer);
         Receive(m_recvQueueFromHost, m_guest.socket, m_notiP2P);
         ReceiveFromGuest();
@@ -83,19 +82,23 @@ public class NetManager : MonoBehaviour {
         m_host.ServerClose();
         Debug.Log("Quit::End");
     }
+
     public void StartHostServer()
     {
         m_host.Start();
     }
+
     public bool ConnectToGameServer() // 서버로 연결
     {
         return m_client.Connect();
     }
+
     public bool ConnectToHost(string ip) // 호스트에게 연결
     {
         m_guest.Setup(ip, HostPort);
         return m_guest.Connect();
     }
+
     public void DisconnectGuestSocket()
     {
         m_guest.DisConnect();
@@ -104,6 +107,7 @@ public class NetManager : MonoBehaviour {
     {
         m_host.DisconnectAll();
     }
+
     private void Receive(PacketQueue queue, Socket sock, Dictionary<int, RecvNotifier> noti) // 서버나 호스트에게 받은 큐
     {        
         int Count = queue.Count;
@@ -122,6 +126,7 @@ public class NetManager : MonoBehaviour {
             }
         }
     }
+
     private void ReceiveFromGuest()
     {
         int Count = m_recvQueueFromGuest.Count;
@@ -139,6 +144,7 @@ public class NetManager : MonoBehaviour {
             }
         }
     }
+
     private void OnReceivedPacketFromServer(byte[] msg, int size) // 게임서버에서 받는 
     {
         m_recvQueueFromServer.Enqueue(msg, size);
@@ -197,7 +203,6 @@ public class NetManager : MonoBehaviour {
         byte[] data = CreateCompletedPacket(packet);
         if (data == null)
             return 0;
-
        
         sendSize = m_host.Send(guest, data, data.Length);
         
