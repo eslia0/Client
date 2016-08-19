@@ -26,6 +26,7 @@ public class TcpClient
     {
         get { return m_clientSock;  }
     }
+
     public TcpClient()
     {
         
@@ -64,6 +65,7 @@ public class TcpClient
         asyncData.clientSock = m_clientSock;
 
         try {
+			
             m_clientSock.BeginReceive(asyncData.msg, 0, AsyncData.msgMaxLength, SocketFlags.None, asyncReceiveCallback, asyncData);
             
         }
@@ -113,6 +115,7 @@ public class TcpClient
         }        
 
         try {
+			asyncReceiveCallback = new AsyncCallback(HandleAsyncReceive);
             clientSock.BeginReceive(asyncData.msg, 0, AsyncData.msgMaxLength, SocketFlags.None, asyncReceiveCallback, asyncData);
         }
         catch {

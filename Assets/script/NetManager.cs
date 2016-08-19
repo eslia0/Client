@@ -204,10 +204,6 @@ public class NetManager : MonoBehaviour {
         byte[] data = CreateCompletedPacket(packet);
         if (data == null)
             return 0;
-<<<<<<< HEAD
-       
-=======
->>>>>>> fa70f15edbb5781e2753df76b8342c0773a732f5
         sendSize = m_host.Send(guest, data, data.Length);
         
         return sendSize;
