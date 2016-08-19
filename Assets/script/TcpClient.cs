@@ -45,8 +45,7 @@ public class TcpClient
         {
             if (m_clientSock.Connected)
                 return false;
-        }
-        
+        }        
 
         // connect server
         try
@@ -99,7 +98,7 @@ public class TcpClient
         
         try
         {
-            asyncData.msgLength = clientSock.EndReceive(asyncResult);                               
+			asyncData.msgLength = clientSock.EndReceive(asyncResult);                 
         }
         catch
         {
@@ -110,15 +109,15 @@ public class TcpClient
         Debug.Log("TcpClient::ReceiveFrom" + m_clientSock.RemoteEndPoint.ToString() + " "+ asyncData.msgLength);
         if (OnReceived != null)
         {
-
             OnReceived(asyncData.msg, asyncData.msgLength);
-        }        
+        }
 
         try
 		{
             clientSock.BeginReceive(asyncData.msg, 0, AsyncData.msgMaxLength, SocketFlags.None, asyncReceiveCallback, asyncData);
         }
-        catch {
+        catch
+		{
             Debug.Log("TCPClient::HandleAsyncReceive() : BeginReceive - 예외");
             DisConnect();
         }
