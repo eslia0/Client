@@ -193,7 +193,7 @@ public class LobbyForm : UIForm {
         EnterRoomResultData resultData = packet.GetData();
         if(resultData.result < 1)
         {
-            dialogMessage.Alert("연결실패");
+            dialogMessage.Alert("연결실패-서버거부");
             dialogMessage.Close(false, 2f);
             return;
         }
@@ -207,7 +207,7 @@ public class LobbyForm : UIForm {
         }
         else // 호스트에 연결 실패
         {
-            dialogMessage.Alert("연결실패");
+            dialogMessage.Alert("연결실패-호스트거부");
             dialogMessage.Close(false, 2f);
             
             // 서버에게 방퇴장 알림
@@ -231,6 +231,7 @@ public class LobbyForm : UIForm {
         if(packet.GetData().roomNumber == CreateRoomResultData.Fail)
         {   
             dialogMessage.Alert("방 만들기 실패");
+            Debug.Log("방생성 - 실패");
             dialogMessage.Close(false, 3f);
         }
         else // 방 생성 성공
@@ -240,27 +241,31 @@ public class LobbyForm : UIForm {
             LoginData loginData = GameManager.instance.login;
             RoomInfo roomInfo = new RoomInfo(packet.GetData().roomNumber, lastCreateRoomData.title, lastCreateRoomData.map, new PlayerInfo(loginData.id), RoomInfo.PlayerMode.Host);
             GameManager.instance.currentRoomInfo = roomInfo;
-            dialogMessage.Alert("방 생성에 성공하였습니다");
+            dialogMessage.Alert("방 생성 성공");
+            Debug.Log("방생성 - 성공 - 방번호 : " + packet.GetData().roomNumber);
             ChangeForm(typeof(RoomForm).Name); // 폼 변경
         }
     }
-    private void OnReceiveP2PEnterRoomResult(Socket sock, byte[] data) // Host To Guest,방입장요청 결과
-    {
-        // From 호스트 방입장 요청  결과
-        // 현재 방 정보를 매니저에 저장한다.
+
+    // [ 게스트가 처리하는 패킷 메서드 (From 호스트) ] - 방입장 요청에 대한 결과 처리
+    private void OnReceiveP2PEnterRoomResult(Socket sock, byte[] data) 
+    {   
         P2PEnterRoomResultPacket resultPacket = new P2PEnterRoomResultPacket(data);
         P2PEnterRoomResultData resultData = resultPacket.GetData();
+
+        // 결과가 입장 실패라면
         if (resultData.result == (byte)P2PEnterRoomResultData.RESULT.Fail)
         {
-            dialogMessage.Alert("방입장실패");
+            dialogMessage.Alert("서버 -> 방입장실패");
             dialogMessage.Close(false, 1f);
-            GameManager.instance.netManager.DisconnectGuestSocket(); // 호스트와 연결 종료
+            GameManager.instance.netManager.DisconnectMyGuestSocket(); // 호스트와 연결 종료
             return;
         }
 
-        // 성공
+        // 성공이면
         RoomInfo roomInfo = new RoomInfo(curSelectedRoom.roomNum, curSelectedRoom.roomName, curSelectedRoom.mapType, new PlayerInfo(curSelectedRoom.hostId), RoomInfo.PlayerMode.Guest);
-        Debug.Log("입장허가받음::이전 사람수:" + resultData.otherGuestCount+" myIndex:"+resultData.myIndex);
+        Debug.Log("서버 - 방입장 성공::이전 사람수:" + resultData.otherGuestCount+" myIndex:"+resultData.myIndex);
+
         // 방정보에 다른 사람 정보 넣기
         for(int i = 0; i < resultData.otherGuestCount; i++)
         {

@@ -34,8 +34,8 @@ public class NetManager : MonoBehaviour {
     public string GameServerIP;
     public int GameServerPort = 9800;
     
-    public int HostPort = 9700;    
-
+    public int HostPort = 9700;
+    object m_objLockGuestPacketQueue = new object();
     void Awake()
     {
         m_sendBuffer = new byte[BufferSize];
@@ -74,13 +74,12 @@ public class NetManager : MonoBehaviour {
     }   
     void OnApplicationQuit()
     {
-        Debug.Log("Quit::Server Socket Close");
+        Debug.Log("NetManager::AllSocketClose");
         ProgramExitPacket packet = new ProgramExitPacket();
         SendToServer(packet);
         m_client.DisConnect();
-        Debug.Log("Quit::Host Socket Close");
         m_host.ServerClose();
-        Debug.Log("Quit::End");
+        m_guest.DisConnect();
     }
 
     public void StartHostServer()
@@ -98,12 +97,20 @@ public class NetManager : MonoBehaviour {
         m_guest.Setup(ip, HostPort);
         return m_guest.Connect();
     }
+<<<<<<< HEAD
 
     public void DisconnectGuestSocket()
+=======
+    public void DisconnectMyGuestSocket() // (내가 게스트일때) 호스트와 연결을 끊는다.
+>>>>>>> 5f8641b7c4c2c53405c7a691a490162fa5c3ac97
     {
         m_guest.DisConnect();
     }
-    public void DisconnectHostSocket()
+    public void DisconnectGuestSocket(Socket other) //(내가 호스트일때) 특정 게스트와 연결을 끊는다.
+    {
+        m_host.DisconnectClient(other);
+    }
+    public void CloseHostSocket() // (내가 호스트 일 떄) 모든 게스트와 연결을 끊는다.
     {
         m_host.DisconnectAll();
     }
@@ -135,7 +142,11 @@ public class NetManager : MonoBehaviour {
         {
             int recvSize = 0;
             recvSize = m_recvQueueFromGuest.Dequeue(ref m_recvBuffer, m_recvBuffer.Length);
-            Socket sock = indexGuestQueue.Dequeue();
+            Socket sock;
+            lock (m_objLockGuestPacketQueue)
+            {
+                 sock = indexGuestQueue.Dequeue();
+            }            
             if (recvSize > 0)
             {
                 byte[] msg = new byte[recvSize];
@@ -153,7 +164,10 @@ public class NetManager : MonoBehaviour {
     {
         Debug.Log("OnReceivedPacketFromGuest::" + socket.RemoteEndPoint.ToString() + " " + msg.Length);
         m_recvQueueFromGuest.Enqueue(msg, size);
-        indexGuestQueue.Enqueue(socket);
+        lock (m_objLockGuestPacketQueue)
+        {
+            indexGuestQueue.Enqueue(socket);
+        }            
     }
 
     private void OnReceivedPacketFromHost(byte[] msg, int size) // 호스트에게 받는
