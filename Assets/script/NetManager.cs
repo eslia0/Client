@@ -151,6 +151,7 @@ public class NetManager : MonoBehaviour {
     }
     private void OnReceivedPacketFromGuest(Socket socket, byte[] msg, int size) // 게스트들에게 받는
     {
+        Debug.Log("OnReceivedPacketFromGuest::" + socket.RemoteEndPoint.ToString() + " " + msg.Length);
         m_recvQueueFromGuest.Enqueue(msg, size);
         indexGuestQueue.Enqueue(socket);
     }
@@ -193,7 +194,7 @@ public class NetManager : MonoBehaviour {
         byte[] data = CreateCompletedPacket(packet);
         if (data == null)
             return 0;
-        Debug.Log("SendToHost()::소켓에 패킷 Send");
+        Debug.Log("SendToHost()::소켓에 패킷 Send" + data.Length);
         sendSize = m_guest.Send(data, data.Length);
         return sendSize;
     }
@@ -203,7 +204,10 @@ public class NetManager : MonoBehaviour {
         byte[] data = CreateCompletedPacket(packet);
         if (data == null)
             return 0;
+<<<<<<< HEAD
        
+=======
+>>>>>>> fa70f15edbb5781e2753df76b8342c0773a732f5
         sendSize = m_host.Send(guest, data, data.Length);
         
         return sendSize;
@@ -295,7 +299,7 @@ public class NetManager : MonoBehaviour {
         byte[] packetData;
         int packetId;
         getPacketData(data, out packetId, out packetData);
-        Debug.Log("ReceivePacket:: 패킷id:"+packetId + " 길이:" + data.Length);
+        Debug.Log("ReceivePacket::"+sock.RemoteEndPoint.ToString()+"패킷id:" + packetId + " 길이:" + data.Length);
         RecvNotifier recvNoti;
         if (noti.TryGetValue(packetId, out recvNoti))
         {

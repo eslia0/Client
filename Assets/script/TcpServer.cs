@@ -116,6 +116,7 @@ public class TcpServer
         Socket listenSock = (Socket)asyncResult.AsyncState;
         Socket clientSock = listenSock.EndAccept(asyncResult);
         clientSockes.Add(clientSock);
+        Debug.Log("TcpServer::Accept " + clientSock.RemoteEndPoint.ToString());
         if(OnAccepted != null)
         {
             OnAccepted(clientSock);
@@ -150,6 +151,7 @@ public class TcpServer
             DisconnectClient(clientSock);
             return;
         }
+        Debug.Log("TcpServer::OnReceived " + clientSock.RemoteEndPoint.ToString() + " " + asyncData.msgLength);
         if (OnReceived != null)
         {
             OnReceived(clientSock, asyncData.msg, asyncData.msgLength);
